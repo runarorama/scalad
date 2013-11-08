@@ -1,7 +1,7 @@
 import sbtrelease._
 
 /** Project */
-name := "Scalad"
+name := "Scalad-Casbah"
 
 organization := "org.eigengo"
 
