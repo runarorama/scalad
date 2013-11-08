@@ -4,6 +4,8 @@ import spray.json._
 import java.util.{UUID, Date}
 import java.net.URI
 import org.eigengo.scalad.mongo.{UuidChecker, IsoDateChecker}
+import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 
 /** Convenient implicit conversions */
 object BigNumberMarshalling {
@@ -52,6 +54,12 @@ trait BigNumberMarshalling {
 }
 
 trait DateMarshalling {
+
+  implicit object DateTimeJsonFormat extends BsonMarshalling[DateTime] {
+    override val key = "$date"
+    override def writeString(obj: DateTime) = ISODateTimeFormat.dateTime.print(obj)
+    override def readString(value: String) = ISODateTimeFormat.dateTime.parseDateTime(value)
+  }
 
   implicit object DateJsonFormat extends BsonMarshalling[Date] with IsoDateChecker {
 

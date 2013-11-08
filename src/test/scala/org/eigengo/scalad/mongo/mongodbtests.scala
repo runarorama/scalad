@@ -1,14 +1,15 @@
 package org.eigengo.scalad.mongo
 
-import com.mongodb._
+import com.mongodb.BasicDBObjectBuilder
 import org.specs2.mutable.Specification
 import java.util.concurrent.atomic.AtomicInteger
+import com.mongodb.casbah.Imports._
 
 trait MongoCrudTestAccess {
-  val m = new Mongo()
-  m.setWriteConcern(WriteConcern.SAFE)
+  val m = MongoClient("localhost", 27017)
+  m.setWriteConcern(WriteConcern.Safe)
   // write concern needed to catch constraint violations (Mongo Magic)
-  val db = m.getDB("MongoCrudTest")
+  val db = m("MongoCrudTest")
   db.dropDatabase()
 }
 

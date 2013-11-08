@@ -65,10 +65,9 @@ libraryDependencies <<= scalaVersion { scala_version =>
         "com.github.fommil"    % "java-logging"        % "1.0",
         "com.typesafe.akka"    %% "akka-actor"         % "2.1.2",
         "com.typesafe.akka"    %% "akka-contrib"       % "2.1.2" intransitive(), // JUL only
-        "org.mongodb"          % "mongo-java-driver"   % "2.10.1",
+        "org.mongodb"          %% "casbah"             % "2.6.3",
         "com.typesafe"         % "config"              % "1.0.0",
         "io.spray"             %% "spray-json"         % "1.2.3",
-        "joda-time"            % "joda-time"           % "2.3",
         "org.specs2"           %% "specs2"             % "1.13"   % "test",
         "org.scalacheck"       %% "scalacheck"         % "1.10.0" % "test"
     )
