@@ -1,4 +1,6 @@
-# ScalaD  [![Build Status](https://travis-ci.org/eigengo/scalad.png?branch=master)](https://travis-ci.org/eigengo/scalad)
+# ScalaD-Casbah
+
+This is a fork of the ScalaD project to use the Casbah Scala driver for mongo rather than the Java driver. Support for Joda `DateTime` is added rather than `java.util.Date`.
 
 Reuse [Spray JSON](http://github.com/spray/spray-json/) formatters as serialisers for [MongoDB](http://www.mongodb.org) persistence in Scala, and get access to a useful CRUD for performing simple searches.
 
