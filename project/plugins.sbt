@@ -1,6 +1,7 @@
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.2.0")
+resolvers += Resolver.url(
+  "bintray-sbt-plugin-releases",
+    url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(
+        Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.6")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.7")
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.1")
 

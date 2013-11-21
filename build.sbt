@@ -1,7 +1,7 @@
-import sbtrelease._
-
 /** Project */
 name := "Scalad-Casbah"
+
+licenses += ("BSD", url("http://www.opensource.org/licenses/bsd-license.php"))
 
 organization := "org.eigengo"
 
@@ -97,4 +97,7 @@ testOptions := Seq(Tests.Filter(s =>
 
 /** Console */
 initialCommands in console := "import org.eigengo.scalad._"
+
+seq(bintrayPublishSettings:_*)
+
 
