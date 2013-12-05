@@ -22,11 +22,11 @@ trait MongoUpdate {
   def updateFirst[T: IdentityQueryBuilder: MongoSerialiser: CollectionProvider](old: T, update: T): Option[T] = {
     val col = implicitly[CollectionProvider[T]].getCollection
     val query = implicitly[IdentityQueryBuilder[T]].createIdQuery(old)
-    val existing = col.findOne(query)
-    if (existing == null) return None
-    val updateDb = implicitly[MongoSerialiser[T]].serialiseDB(update)
-    if (col.update(existing, updateDb) == null) None
-    else Some(update)
+    col.findOne(query).flatMap { existing =>
+      val updateDb = implicitly[MongoSerialiser[T]].serialiseDB(update)
+      if (col.update(existing, updateDb) == null) None
+      else Some(update)
+    }
   }
 
 }

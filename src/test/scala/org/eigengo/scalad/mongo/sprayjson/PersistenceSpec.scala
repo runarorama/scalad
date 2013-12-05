@@ -22,7 +22,7 @@ class PersistenceSpec extends Specification with SprayJsonTestSupport with NullM
 
   val modified = student.copy(graduated = true)
 
-  implicit val StudentCollectionProvider = new SprayMongoCollection[Student](db.underlying, "students", "id":>1) {
+  implicit val StudentCollectionProvider = new SprayMongoCollection[Student](db, "students", "id":>1) {
     override def indexes: List[JsObject] = {"collegeUuid":>1} :: Nil
   }
 

@@ -32,17 +32,15 @@ trait MongoSearch extends JavaLogging {
   }
 
   /** @return all results from the query. */
-  def searchAll[T: CollectionProvider : MongoSerialiser](query: DBObject,
-                                                         sort: Option[DBObject] = None): ConsumerIterator[T] = {
-//  val iterable = new NonblockingProducerConsumer[T]
+  def searchAll[T: CollectionProvider : MongoSerialiser](query: DBObject): ConsumerIterator[T] = {
+//    val iterable = new NonblockingProducerConsumer[T]
     val iterable = new BlockingProducerConsumer[T](100)
 
     import ExecutionContext.Implicits.global
     Future {
       val collection = implicitly[CollectionProvider[T]].getCollection
       val serialiser = implicitly[MongoSerialiser[T]]
-      val c1 = collection find query
-      val cursor = sort map (c1 sort _) getOrElse c1
+      val cursor = collection find query
 
       try {
         while (!iterable.stopped && cursor.hasNext) {
@@ -63,9 +61,8 @@ trait MongoSearch extends JavaLogging {
   /** @return the only found entry, or `None` if nothing found.
     * @throws TooManyResults if more than one result.
     */
-  def searchUnique[T: CollectionProvider : MongoSerialiser](query: DBObject,
-                                                            sort: Option[DBObject] = None): Option[T] = {
-    val results = searchAll(query, sort).toList // blocks
+  def searchUnique[T: CollectionProvider : MongoSerialiser](query: DBObject): Option[T] = {
+    val results = searchAll(query).toList // blocks
     if (results.isEmpty) None
     else if (results.tail.isEmpty) Some(results.head)
     else throw new TooManyResults(query)

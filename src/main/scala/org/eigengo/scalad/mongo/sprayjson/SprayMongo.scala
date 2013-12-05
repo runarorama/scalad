@@ -3,7 +3,7 @@ package org.eigengo.scalad.mongo.sprayjson
 import org.eigengo.scalad.mongo._
 import spray.json.{JsValue, JsObject, JsonFormat}
 import akka.contrib.jul.JavaLogging
-import com.mongodb.{WriteConcern, DB, DBObject}
+import com.mongodb.casbah.Imports._
 import spray.json.pimpAny
 import scala.language.implicitConversions
 
@@ -17,12 +17,12 @@ trait Implicits extends SprayJsonConvertors {
 }
 
 /** MongoDB format for indexing fields, e.g. {"key": 1} */
-class SprayMongoCollection[T](db: DB,
+class SprayMongoCollection[T](db: MongoDB,
                               name: String,
                               uniqueIndexes: JsObject*)
   extends CollectionProvider[T] with Implicits with JavaLogging {
 
-  def getCollection = db.getCollection(name)
+  def getCollection = db(name)
 
   if (IndexedCollectionProvider.privilegedIndexing(getCollection)) {
     log.debug("Ensuring indexes exist on " + getCollection)
@@ -45,7 +45,7 @@ class SprayMongo extends Implicits with JavaLogging {
   def insert[T: CollectionProvider : JsonFormat](entity: T): Option[T] = scalad.create(entity)
 
   // good for fire-and-forget writes that happen often, e.g. writing logs
-  def insertFast[T: CollectionProvider : JsonFormat](entity: T): Option[T] = scalad.create(entity, WriteConcern.UNACKNOWLEDGED)
+  def insertFast[T: CollectionProvider : JsonFormat](entity: T): Option[T] = scalad.create(entity, WriteConcern.Normal)
 
   def findOne[T: CollectionProvider : JsonFormat](query: JsObject): Option[T] = scalad.searchFirst(query)
 
@@ -57,8 +57,7 @@ class SprayMongo extends Implicits with JavaLogging {
 
   def removeOne[T: CollectionProvider : JsonFormat](query: JsObject): Option[T] = {
     val result = implicitly[CollectionProvider[T]].getCollection.findAndRemove(query)
-    if (result == null) None
-    else Some(serialiser[T] deserialise result)
+    result.map(serialiser[T].deserialise)
   }
 
   def count[T: CollectionProvider : JsonFormat](query: JsObject): Long =

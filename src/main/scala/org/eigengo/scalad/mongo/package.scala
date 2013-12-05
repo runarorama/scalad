@@ -1,7 +1,7 @@
 package org.eigengo.scalad.mongo
 
 import scala.collection._
-import com.mongodb._
+import com.mongodb.casbah.Imports._
 import akka.contrib.jul.JavaLogging
 
 /** These implicits make the MongoDB API nicer to use, for example by allowing
@@ -10,7 +10,8 @@ import akka.contrib.jul.JavaLogging
 object Implicits {
   import scala.language.implicitConversions
 
-  implicit var JSON2DBObject = (json: String) => util.JSON.parse(json).asInstanceOf[DBObject]
+  implicit var JSON2DBObject =
+    (json: String) => com.mongodb.util.JSON.parse(json).asInstanceOf[DBObject]
 }
 
 /** Mechanism for finding an entry in the database
@@ -41,16 +42,16 @@ trait MongoSerialiser[T] {
   def deserialise(dbObject: Object): T
 }
 
-/** Access to a MongoDB `DBCollection`.
+/** Access to a MongoDB `MongoCollection`.
   * Here is a good place to add an index.
   */
-trait CollectionProvider[T] {
-  def getCollection: DBCollection
+trait CollectionProvider[P] {
+  def getCollection: MongoCollection
 }
 
 /** Provides CRUD access to a MongoDB collection using client-provided implicits to:
   *
-  * 1. provide the backing MongoDB `DBCollection`.
+  * 1. provide the backing MongoDB `MongoCollection`.
   * 2. serialise/deserialise the MongoDB representation.
   * 3. provide a concept of identity for UPDATE/DELETE operations.
   * 4. provide a concept of a key for READ operations.
@@ -81,13 +82,13 @@ with MongoCount
 protected object IndexedCollectionProvider {
 
   // synchronized access only
-  private val indexed = new mutable.WeakHashMap[DBCollection, Boolean]()
+  private val indexed = new mutable.WeakHashMap[MongoCollection, Boolean]()
 
   // true if the calling thread has privileged access to
   // create indexes on the collection. Such callers should
   // proceed immediately to build the indexes as it is possible
   // that no other thread will be granted such privilege.
-  def privilegedIndexing(collection: DBCollection): Boolean = indexed.synchronized {
+  def privilegedIndexing(collection: MongoCollection): Boolean = indexed.synchronized {
     indexed.put(collection, true) match {
       case Some(_) => false
       case None => true

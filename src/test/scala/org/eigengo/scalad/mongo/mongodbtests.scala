@@ -9,7 +9,7 @@ trait MongoCrudTestAccess {
   val m = MongoClient("localhost", 27017)
   m.setWriteConcern(WriteConcern.Safe)
   // write concern needed to catch constraint violations (Mongo Magic)
-  val db = m("MongoCrudTest")
+  val db: MongoDB = m("MongoCrudTest")
   db.dropDatabase()
 }
 
@@ -26,7 +26,7 @@ trait LongEntityPersistence extends MongoCrudTestAccess {
     }
   }
   implicit val LongEntityCollectionProvider = new IndexedCollectionProvider[LongEntity] {
-    def getCollection = db.getCollection("long_entities")
+    def getCollection = db("long_entities")
 
     /** `String`s containing the JSON definition of the index to build. */
     override protected def uniqueFields = "{id:1}" :: Nil
