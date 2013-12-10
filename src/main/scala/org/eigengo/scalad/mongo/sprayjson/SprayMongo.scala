@@ -66,6 +66,25 @@ class SprayMongo extends Implicits with JavaLogging {
   def count[T: CollectionProvider : JsonFormat](): Long =
     implicitly[CollectionProvider[T]].getCollection.count()
 
+  def mapReduce[T: CollectionProvider](mapJS: JSFunction,
+                                       reduceJS: JSFunction,
+                                       query: Option[JsObject] = None,
+                                       output: MapReduceOutputTarget = MapReduceInlineOutput,
+                                       sort: Option[JsObject] = None,
+                                       limit: Option[Int] = None,
+                                       finalizeJS: Option[JSFunction] = None,
+                                       jsScope: Option[JsObject] = None,
+                                       verbose: Boolean = false): Iterable[JsValue] =
+    scalad.mapReduce(mapJS,
+                     reduceJS,
+                     query map (SprayJsonToDBObject _),
+                     output,
+                     sort map (SprayJsonToDBObject _),
+                     limit,
+                     finalizeJS,
+                     jsScope map (SprayJsonToDBObject _),
+                     verbose).map { obj2js _ }
+
   // note, mongodb 2.3.x introduced a lot of fixes to the aggregation framework,
   // e.g. allowing for binary data to be included in pipelines.
   // https://github.com/janm399/scalad/issues/63
@@ -78,3 +97,4 @@ class SprayMongo extends Implicits with JavaLogging {
     }
   }
 }
+

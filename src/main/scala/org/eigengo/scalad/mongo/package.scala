@@ -77,6 +77,7 @@ with MongoCreateOrUpdate
 with MongoModify
 with MongoAggregate
 with MongoCount
+with MongoMapReduce
 
 // enables cross-instance concurrent DB indexing
 protected object IndexedCollectionProvider {

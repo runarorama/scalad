@@ -12,11 +12,11 @@ trait MongoMapReduce {
                                        limit: Option[Int] = None,
                                        finalizeJS: Option[JSFunction] = None,
                                        jsScope: Option[DBObject] = None,
-                                       verbose: Boolean = false): List[DBObject] = {
+                                       verbose: Boolean = false): Iterable[DBObject] = {
     val coll = implicitly[CollectionProvider[T]].getCollection
     val res =
       coll.mapReduce(mapJS, reduceJS, output, query, sort, limit, finalizeJS, jsScope, verbose)
-    res.cursor.toList
+    res.cursor.toIterable
   }
 }
 
